@@ -1,0 +1,26 @@
+{
+  "name": "backend_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "config.js",
+  "scripts": {
+    "test": "node tests/runtime-regression.test.js && node tests/trade-store.test.js && node tests/restart-monitor.test.js && node tests/no-duplicate-order.test.js && node tests/order-flow.test.js",
+    "start": "node serverMonitor.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.15.0",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "fs": "^0.0.1-security",
+    "qrcode": "^1.5.4",
+    "qs": "^6.15.1",
+    "socket.io": "^4.8.3",
+    "speakeasy": "^2.0.0"
+  }
+}

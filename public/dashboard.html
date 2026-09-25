@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Algo Dashboard</title>
+  
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 14px;
+    }
+
+    header {
+      background: #020617;
+      padding: 18px 24px;
+      font-size: 24px;
+      font-weight: 700;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .account-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 14px;
+      max-width: 380px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .account-head .profile-name {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 70px);
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #020617;
+      padding: 20px;
+      border-right: 1px solid #1e293b;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #1e293b;
+    }
+
+    .card b {
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 5px;
+      font-size: 14px;
+    }
+
+    .start { background: #22c55e; }
+    .stop { background: #ef4444; }
+    .login { background: #3b82f6; }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .on { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+    .off { background: #ef4444; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    th {
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    td:nth-child(2),
+    td:nth-child(4),
+    td:nth-child(5),
+    td:nth-child(6) {
+      text-align: right;
+    }
+
+    th:nth-child(2),
+    th:nth-child(4),
+    th:nth-child(5),
+    th:nth-child(6) {
+      text-align: right;
+    }
+
+    .profit { color: #22c55e; font-weight: 600; }
+    .loss { color: #ef4444; font-weight: 600; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .big-pnl {
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    #signals, #orders {
+      padding-left: 15px;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+<header style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+  <div>🚀 Algo Trading Dashboard</div>
+
+  <div id="accountHeader" class="account-head">
+    <span class="dot off"></span>
+    <span>Broker disconnected</span>
+  </div>
+
+  <button class="login" id="authBtn" onclick="handleAuth()">
+    Sign In
+  </button>
+</header>
+
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="card">
+      <b>⚙️ Controls</b><br><br>
+      <button class="start" onclick="startTrading()">Start</button>
+      <button class="stop" onclick="stopTrading()">Stop</button>
+      <button class="login" onclick="loginUpstox()">Connect</button>
+      <br><br>
+      <div id="controlStatus"></div>
+    </div>
+
+    <div class="card">
+      <b>👤 Account</b>
+      <div id="profile">Not Logged</div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <b>📡 Signals</b>
+        <span style="cursor: pointer; display: flex; align-items: center;" onclick="copyAllSignals()" title="Copy all signals">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </span>
+      </div>
+      <ul id="signals" style="list-style: none; padding-left: 0;"></ul>
+    </div>
+
+    <div class="card">
+      <b>💰 Orders</b>
+      <ul id="orders"></ul>
+    </div>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="card">
+      <b>📊 Market Overview</b>
+      <div class="big-pnl" id="pnl">0</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- POSITIONS -->
+      <div class="card">
+        <b>📊 Positions</b>
+        <button onclick="downloadPositions()">Download</button>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Qty</th>
+              <th>Type</th>
+              <th>Entry</th>
+              <th>LTP</th>
+              <th>Target</th>
+              <th>PnL</th>
+            </tr>
+          </thead>
+          <tbody id="positionsTable"></tbody>
+        </table>
+      </div>
+
+      <!-- DAILY -->
+      <div class="card">
+        <b>📊 Daily Report</b>
+        <div id="daily"></div>
+      </div>
+
+    </div>
+
+    <!-- TRADE LOG -->
+    <div class="card">
+      <b>📝 Trade Log</b>
+      <button onclick="downloadTrades()">Download</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>Type</th>
+            <th>Traded Price</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tradesTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SOCKET.IO -->
+<script src="/socket.io/socket.io.js" defer></script>
+<script src="/js/dashboard.js" defer></script>
+
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+# ========== RUNTIME FILES ==========
+token.json
+trade_logs.json
+*.log
+
+# ========== ENVIRONMENT ==========
+.env
+.env.local
+.env.*.local
+
+# ========== SECRETS & KEYS ==========
+*.pem
+*.key
+*.crt
+Reena-key.pem
+
+# ========== NODE ==========
+node_modules/
+npm-debug.log
+
+# ========== IDE & EDITOR ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========== BUILD ==========
+dist/
+build/
+*.zip
+
+# ========== DEBUG ==========
+debug-logs/
+.debug
+
+# ========== OS ==========
+.DS_Store
+desktop.ini
